@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
                     //RecyclerView
                     binding.recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                    recyclerViewAdapter = new RecyclerViewAdapter(cryptoModels);
+                    recyclerViewAdapter = new RecyclerViewAdapter(cryptoModels, MainActivity.this);
                     binding.recyclerView.setAdapter(recyclerViewAdapter);
 
                     /*for (CryptoModel cryptoModels: cryptoModels) {

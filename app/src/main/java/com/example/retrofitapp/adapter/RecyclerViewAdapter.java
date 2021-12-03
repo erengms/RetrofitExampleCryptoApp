@@ -1,29 +1,31 @@
 package com.example.retrofitapp.adapter;
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.net.Uri;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.retrofitapp.R;
+import com.ahmadrosid.svgloader.SvgLoader;
+import com.bumptech.glide.Glide;
 import com.example.retrofitapp.databinding.RecyclerRowBinding;
 import com.example.retrofitapp.model.CryptoModel;
 
-import java.net.URL;
 import java.util.ArrayList;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
+    private Activity activity;
     private ArrayList<CryptoModel> cryptoList;
 
     private String[] colors = {"#7b7294", "#770055", "#2f2f4d", "#153c3a"};
 
-    public RecyclerViewAdapter(ArrayList<CryptoModel> cryptoList) {
+    public RecyclerViewAdapter(ArrayList<CryptoModel> cryptoList, Activity activity) {
         this.cryptoList = cryptoList;
+        this.activity = activity;
     }
 
     @NonNull
@@ -35,12 +37,21 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        holder.itemView.setBackgroundColor(Color.parseColor(colors[position % 4]));
+
         holder.recyclerRowBinding.nameTextview.setText(cryptoList.get(position).name);
         holder.recyclerRowBinding.currencyTextview.setText(cryptoList.get(position).currency);
         holder.recyclerRowBinding.priceTextview.setText("$ " + cryptoList.get(position).price);
-        
 
-        holder.itemView.setBackgroundColor(Color.parseColor(colors[position % 4]));
+       // SvgLoader.pluck().with(activity).load(cryptoList.get(position).logo_url, holder.recyclerRowBinding.logoImageview);
+
+         Glide
+                    .with(activity)
+                    .load(cryptoList.get(position).logo_url)
+                    .into(holder.recyclerRowBinding.logoImageview);
+
+
+
     }
 
     @Override
