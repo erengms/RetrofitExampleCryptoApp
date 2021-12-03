@@ -3,6 +3,7 @@ package com.example.retrofitapp.view;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -62,6 +63,14 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         loadData();
+
+        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadData();
+            }
+        });
+
     }
 
     private void loadData(){
@@ -72,6 +81,9 @@ public class MainActivity extends AppCompatActivity {
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(this::handleResponse)); //getData bana bir CryptoModel listesi veriyor, onu handleResponse metodunda direk işleyebiliriz.
+
+        binding.swipeRefreshLayout.setRefreshing(false);
+
         // retrofit Call ile yapılan işlemleri RxJava'ya çevirecez
        /* Call<List<CryptoModel>> call = cryptoApi.getData();
         call.enqueue(new Callback<List<CryptoModel>>() {
