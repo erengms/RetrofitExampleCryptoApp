@@ -50,8 +50,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     .load(cryptoList.get(position).logo_url)
                     .into(holder.recyclerRowBinding.logoImageview);
 
-
-
     }
 
     @Override

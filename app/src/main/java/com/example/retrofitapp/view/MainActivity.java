@@ -19,10 +19,14 @@ import com.google.gson.GsonBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 // https://api.nomics.com/v1/prices?key=742819bd2ae34b03867b06abd443c3bad654442a
@@ -38,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerViewAdapter recyclerViewAdapter;
 
+    private CompositeDisposable compositeDisposable;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
+                .addCallAdapterFactory(RxJava3CallAdapterFactory.create()) //retrofit'e RxJava ile çalışacağımızı söylüyoruz
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
@@ -58,9 +65,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadData(){
-        CryptoApi cryptoApi = retrofit.create(CryptoApi.class);
+       final CryptoApi cryptoApi = retrofit.create(CryptoApi.class);
 
-        Call<List<CryptoModel>> call = cryptoApi.getData();
+        compositeDisposable = new CompositeDisposable();
+        compositeDisposable.add(cryptoApi.getData()
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(this::handleResponse)); //getData bana bir CryptoModel listesi veriyor, onu handleResponse metodunda direk işleyebiliriz.
+        // retrofit Call ile yapılan işlemleri RxJava'ya çevirecez
+       /* Call<List<CryptoModel>> call = cryptoApi.getData();
         call.enqueue(new Callback<List<CryptoModel>>() {
             @Override
             public void onResponse(Call<List<CryptoModel>> call, Response<List<CryptoModel>> response) {
@@ -72,9 +85,9 @@ public class MainActivity extends AppCompatActivity {
                     recyclerViewAdapter = new RecyclerViewAdapter(cryptoModels, MainActivity.this);
                     binding.recyclerView.setAdapter(recyclerViewAdapter);
 
-                    /*for (CryptoModel cryptoModels: cryptoModels) {
+                    *//*for (CryptoModel cryptoModels: cryptoModels) {
                         Log.d("@@@@", cryptoModels.currency);
-                    }*/
+                    }*//*
                 }
             }
 
@@ -82,6 +95,22 @@ public class MainActivity extends AppCompatActivity {
             public void onFailure(Call<List<CryptoModel>> call, Throwable t) {
                 t.printStackTrace();
             }
-        });
+        });*/
+    }
+
+    private void handleResponse(List<CryptoModel> cryptoModelList){
+        cryptoModels = new ArrayList<>(cryptoModelList);
+
+        //RecyclerView
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+        recyclerViewAdapter = new RecyclerViewAdapter(cryptoModels, MainActivity.this);
+        binding.recyclerView.setAdapter(recyclerViewAdapter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        compositeDisposable.clear();
     }
 }
