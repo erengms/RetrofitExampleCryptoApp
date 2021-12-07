@@ -1,6 +1,7 @@
 package com.example.retrofitapp.adapter;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -18,14 +19,14 @@ import java.util.ArrayList;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
-    private Activity activity;
+    private Context context;
     private ArrayList<CryptoModel> cryptoList;
 
     private String[] colors = {"#7b7294", "#770055", "#2f2f4d", "#153c3a", "#bf4f51", "#00a86b", "#9d2933", "#6b8093", "#c6b164", "#640082"};
 
-    public RecyclerViewAdapter(ArrayList<CryptoModel> cryptoList, Activity activity) {
+    public RecyclerViewAdapter(ArrayList<CryptoModel> cryptoList, Context context) {
         this.cryptoList = cryptoList;
-        this.activity = activity;
+        this.context = context;
     }
 
     @NonNull
@@ -46,7 +47,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
        // SvgLoader.pluck().with(activity).load(cryptoList.get(position).logo_url, holder.recyclerRowBinding.logoImageview);
 
          Glide
-                    .with(activity)
+                    .with(context)
                     .load(cryptoList.get(position).logo_url)
                     .into(holder.recyclerRowBinding.logoImageview);
 
