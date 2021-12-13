@@ -41,7 +41,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity implements RecyclerViewAdapter.OnUserClickListener {
 
     private ActivityMainBinding binding;
-
+    private ArrayList<CryptoModel> selectedList;
     private ArrayList<CryptoModel> cryptoModels;
     private Retrofit retrofit;
     private String BASE_URL = "https://api.nomics.com/v1/";
@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         dividerItemDecoration.setDrawable(ContextCompat.getDrawable(MainActivity.this, R.drawable.divider));
         binding.recyclerView.addItemDecoration(dividerItemDecoration);
 
+        selectedList = new ArrayList<>();
     }
 
     private void loadData(){
@@ -181,11 +182,17 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
     @Override
     public void onUserClick(int position) {
-        selectedCryptoModel = cryptoModels.get(position);
+        if (selectedList.size() > 0){
+            selectRow(position);
+        }
     }
 
     @Override
     public void onUserLongClick(int position) {
+       selectRow(position);
+    }
+
+    public void selectRow(int position){
         if (actionMode == null){
             actionMode = startActionMode(actionModeCallBack);
         }
@@ -195,14 +202,22 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         cryptoModels.get(position).setSelected(!crypto.isSelected());
 
         recyclerViewAdapter.notifyDataSetChanged();
-
+        selectedList.clear();
         int total = 0;
         for(CryptoModel cryptoModel : cryptoModels){
             if (cryptoModel.isSelected){
                 total++;
+                selectedList.add(cryptoModel);
+            } else {
+                selectedList.remove(cryptoModel);
             }
         }
         actionMode.setTitle(total + " eleman seçildi");
+
+        if (selectedList.size() == 0){
+            actionMode.finish();
+            recyclerViewAdapter.notifyDataSetChanged();
+        }
     }
 
 }
