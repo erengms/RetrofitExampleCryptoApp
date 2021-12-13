@@ -16,4 +16,14 @@ public class CryptoModel {
 
     @SerializedName("logo_url")
     public String logo_url;
+
+    public boolean isSelected;
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
 }

@@ -7,6 +7,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.example.retrofitapp.R;
@@ -33,7 +36,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 // https://api.nomics.com/v1/prices?key=742819bd2ae34b03867b06abd443c3bad654442a
 // logolu https://api.nomics.com/v1/currencies/ticker?key=742819bd2ae34b03867b06abd443c3bad654442a
 // id'ye göre https://api.nomics.com/v1/currencies/ticker?key=742819bd2ae34b03867b06abd443c3bad654442a&ids=BTC,ETH
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements RecyclerViewAdapter.OnUserClickListener {
 
     private ActivityMainBinding binding;
 
@@ -42,8 +45,10 @@ public class MainActivity extends AppCompatActivity {
     private String BASE_URL = "https://api.nomics.com/v1/";
 
     private RecyclerViewAdapter recyclerViewAdapter;
-
     private CompositeDisposable compositeDisposable;
+
+    private ActionMode actionMode;
+    private CryptoModel selectedCryptoModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,9 +120,50 @@ public class MainActivity extends AppCompatActivity {
 
         //RecyclerView
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-        recyclerViewAdapter = new RecyclerViewAdapter(cryptoModels, MainActivity.this);
+        recyclerViewAdapter = new RecyclerViewAdapter(cryptoModels, MainActivity.this, this);
         binding.recyclerView.setAdapter(recyclerViewAdapter);
+
     }
+
+    ActionMode.Callback actionModeCallBack = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            getMenuInflater().inflate(R.menu.delete_menu, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            if (item.getItemId() == R.id.delete_item){
+                ArrayList<CryptoModel> tempList = new ArrayList<>();
+                tempList.addAll(cryptoModels);
+
+                for (CryptoModel crypto: tempList) {
+                    if (crypto.isSelected){
+                        cryptoModels.remove(crypto);
+                    }
+                }
+                recyclerViewAdapter.notifyDataSetChanged();
+                actionMode.finish();
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            for(int i=0; i<cryptoModels.size(); i++){
+                cryptoModels.get(i).setSelected(false);
+            }
+            actionMode = null;
+            recyclerViewAdapter.notifyDataSetChanged();
+        }
+    };
 
     @Override
     protected void onDestroy() {
@@ -125,4 +171,31 @@ public class MainActivity extends AppCompatActivity {
 
         compositeDisposable.clear();
     }
+
+    @Override
+    public void onUserClick(int position) {
+        selectedCryptoModel = cryptoModels.get(position);
+    }
+
+    @Override
+    public void onUserLongClick(int position) {
+        if (actionMode == null){
+            actionMode = startActionMode(actionModeCallBack);
+        }
+
+        //toggle selection
+        CryptoModel crypto = cryptoModels.get(position);
+        cryptoModels.get(position).setSelected(!crypto.isSelected());
+
+        recyclerViewAdapter.notifyDataSetChanged();
+
+        int total = 0;
+        for(CryptoModel cryptoModel : cryptoModels){
+            if (cryptoModel.isSelected){
+                total++;
+            }
+        }
+        actionMode.setTitle(total + " eleman seçildi");
+    }
+
 }
