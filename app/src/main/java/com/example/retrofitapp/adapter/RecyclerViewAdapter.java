@@ -15,6 +15,7 @@ import com.ahmadrosid.svgloader.SvgLoader;
 import com.bumptech.glide.Glide;
 import com.example.retrofitapp.R;
 import com.example.retrofitapp.databinding.RecyclerRowBinding;
+import com.example.retrofitapp.listener.OnUserClickListener;
 import com.example.retrofitapp.model.CryptoModel;
 
 import java.util.ArrayList;
@@ -25,11 +26,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private ArrayList<CryptoModel> cryptoList;
 
     private String[] colors = {"#770055", "#2f2f4d"};
-
-    public interface OnUserClickListener{
-        void onUserClick(int position);
-        void onUserLongClick(int position);
-    }
 
     private OnUserClickListener onUserClickListener;
 

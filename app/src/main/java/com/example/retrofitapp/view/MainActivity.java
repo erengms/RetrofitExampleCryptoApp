@@ -17,6 +17,7 @@ import android.view.View;
 import com.example.retrofitapp.R;
 import com.example.retrofitapp.adapter.RecyclerViewAdapter;
 import com.example.retrofitapp.databinding.ActivityMainBinding;
+import com.example.retrofitapp.listener.OnUserClickListener;
 import com.example.retrofitapp.model.CryptoModel;
 import com.example.retrofitapp.service.CryptoApi;
 import com.google.gson.Gson;
@@ -38,7 +39,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 // https://api.nomics.com/v1/prices?key=742819bd2ae34b03867b06abd443c3bad654442a
 // logolu https://api.nomics.com/v1/currencies/ticker?key=742819bd2ae34b03867b06abd443c3bad654442a
 // id'ye göre https://api.nomics.com/v1/currencies/ticker?key=742819bd2ae34b03867b06abd443c3bad654442a&ids=BTC,ETH
-public class MainActivity extends AppCompatActivity implements RecyclerViewAdapter.OnUserClickListener {
+public class MainActivity extends AppCompatActivity implements OnUserClickListener {
 
     private ActivityMainBinding binding;
     private ArrayList<CryptoModel> selectedList;
