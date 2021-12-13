@@ -60,21 +60,23 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
          if (cryptoList.get(position).isSelected){
              holder.itemView.setBackgroundColor(Color.parseColor(colors[0]));
+             holder.recyclerRowBinding.checkImageview.setVisibility(View.VISIBLE);
          } else {
              holder.itemView.setBackgroundColor(Color.parseColor(colors[1]));
+             holder.recyclerRowBinding.checkImageview.setVisibility(View.GONE);
          }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onUserClickListener.onUserClick(position);
+                onUserClickListener.onUserClick(holder.getAdapterPosition());
             }
         });
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                onUserClickListener.onUserLongClick(position);
+                onUserClickListener.onUserLongClick(holder.getAdapterPosition());
                 return false;
             }
         });
