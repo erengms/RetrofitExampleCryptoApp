@@ -1,6 +1,8 @@
 package com.example.retrofitapp.view;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     private Retrofit retrofit;
     private String BASE_URL = "https://api.nomics.com/v1/";
 
+    private RecyclerView recyclerView;
     private RecyclerViewAdapter recyclerViewAdapter;
     private CompositeDisposable compositeDisposable;
 
@@ -75,6 +78,10 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                 loadData();
             }
         });
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(MainActivity.this, DividerItemDecoration.VERTICAL);
+        dividerItemDecoration.setDrawable(ContextCompat.getDrawable(MainActivity.this, R.drawable.divider));
+        binding.recyclerView.addItemDecoration(dividerItemDecoration);
 
     }
 
