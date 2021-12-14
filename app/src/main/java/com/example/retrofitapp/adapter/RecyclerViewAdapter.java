@@ -25,7 +25,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private Context context;
     private ArrayList<CryptoModel> cryptoList;
 
-    private String[] colors = {"#770055", "#2f2f4d"};
+    private String[] colors = {"#1565c0", "#003c8f"};
 
     private OnUserClickListener onUserClickListener;
 
