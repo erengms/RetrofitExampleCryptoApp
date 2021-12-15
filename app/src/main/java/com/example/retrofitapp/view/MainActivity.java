@@ -10,14 +10,17 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.retrofitapp.R;
 import com.example.retrofitapp.adapter.RecyclerViewAdapter;
 import com.example.retrofitapp.databinding.ActivityMainBinding;
+import com.example.retrofitapp.listener.MyListener;
 import com.example.retrofitapp.listener.OnUserClickListener;
 import com.example.retrofitapp.model.CryptoModel;
 import com.example.retrofitapp.service.CryptoApi;
@@ -38,7 +41,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 // https://api.nomics.com/v1/prices?key=742819bd2ae34b03867b06abd443c3bad654442a
 // logolu https://api.nomics.com/v1/currencies/ticker?key=742819bd2ae34b03867b06abd443c3bad654442a
 // id'ye göre https://api.nomics.com/v1/currencies/ticker?key=742819bd2ae34b03867b06abd443c3bad654442a&ids=BTC,ETH
-public class MainActivity extends AppCompatActivity implements OnUserClickListener {
+public class MainActivity extends AppCompatActivity implements OnUserClickListener, MyListener {
 
     private ActivityMainBinding binding;
     private ArrayList<CryptoModel> selectedList;
@@ -51,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements OnUserClickListen
     private CompositeDisposable compositeDisposable;
 
     private ActionMode actionMode;
-    private CryptoModel selectedCryptoModel;
+    private MyListener myListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements OnUserClickListen
         binding.recyclerView.addItemDecoration(dividerItemDecoration);
 
         selectedList = new ArrayList<>();
+
+        setCallback(this);
     }
 
     private void loadData(){
@@ -94,8 +99,6 @@ public class MainActivity extends AppCompatActivity implements OnUserClickListen
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(this::handleResponse)); //getData bana bir CryptoModel listesi veriyor, onu handleResponse metodunda direk işleyebiliriz.
-
-        binding.swipeRefreshLayout.setRefreshing(false);
 
         // retrofit Call ile yapılan işlemleri RxJava'ya çevirecez
        /* Call<List<CryptoModel>> call = cryptoApi.getData();
@@ -131,6 +134,11 @@ public class MainActivity extends AppCompatActivity implements OnUserClickListen
         recyclerViewAdapter = new RecyclerViewAdapter(cryptoModels, MainActivity.this, this);
         binding.recyclerView.setAdapter(recyclerViewAdapter);
 
+        myListener.onSuccess();
+    }
+
+    public void setCallback(MyListener listener){
+        this.myListener = listener;
     }
 
     ActionMode.Callback actionModeCallBack = new ActionMode.Callback() {
@@ -189,7 +197,6 @@ public class MainActivity extends AppCompatActivity implements OnUserClickListen
 
     @Override
     public void onUserLongClick(int position) {
-        //test
        selectRow(position);
     }
 
@@ -221,4 +228,9 @@ public class MainActivity extends AppCompatActivity implements OnUserClickListen
         }
     }
 
+    @Override
+    public void onSuccess() {
+        Toast.makeText(this,"Veriler Güncellendi", Toast.LENGTH_SHORT).show();
+        binding.swipeRefreshLayout.setRefreshing(false);
+    }
 }
