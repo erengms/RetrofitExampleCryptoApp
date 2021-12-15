@@ -159,13 +159,16 @@ public class MainActivity extends AppCompatActivity implements OnUserClickListen
                 ArrayList<CryptoModel> tempList = new ArrayList<>();
                 tempList.addAll(cryptoModels);
 
+                int removedItems = 0;
                 for (CryptoModel crypto: tempList) {
                     if (crypto.isSelected){
                         cryptoModels.remove(crypto);
+                        removedItems++;
                     }
                 }
                 recyclerViewAdapter.notifyDataSetChanged();
                 actionMode.finish();
+                Toast.makeText(MainActivity.this, removedItems + " kayıt silindi", Toast.LENGTH_SHORT).show();
                 return true;
             }
             return false;
